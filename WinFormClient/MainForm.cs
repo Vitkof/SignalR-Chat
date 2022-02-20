@@ -123,6 +123,33 @@ namespace WinFormClient
         }
 
 
+        private async void BtnStreamFromServer_Click(object sender, EventArgs e)
+        {
+            var stream = _hub.StreamAsync<int>("DownloadStream");
+
+            await foreach (var n in stream)
+            {
+                Debug.WriteLine(n);
+            }
+            Debug.WriteLine("Stream Serv->Client completed");
+        }
+
+        private async void BtnStreamToServer_Click(object sender, EventArgs e)
+        {
+            var asyncEnumerable = Test();
+            await _hub.SendAsync("UploadStream", asyncEnumerable);
+        }
+
+        async IAsyncEnumerable<int> Test()
+        {
+            for (int i = 11; i > 0; i--)
+            {
+                yield return i;
+                await Task.Delay(500);
+            }
+        }
+
+
         private async void BtnSend_Click(object sender, EventArgs e)
         {
             if (_hub.State == HubConnectionState.Connected)

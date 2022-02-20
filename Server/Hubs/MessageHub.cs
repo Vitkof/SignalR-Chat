@@ -50,5 +50,25 @@ namespace Server.Hubs
         {
             return Groups.RemoveFromGroupAsync(Context.ConnectionId, "Subscribers");
         }
+
+
+        public async IAsyncEnumerable<int> DownloadStream([EnumeratorCancellation] CancellationToken token)
+        {
+            for (int i = 0; i < 11 && !token.IsCancellationRequested; i++)
+            {
+                yield return i;
+                await Task.Delay(500, token);
+            }
+        }
+
+
+        public async Task UploadStream(IAsyncEnumerable<int> async)
+        {
+            await foreach (var n in async)
+            {
+                Debug.WriteLine(n);
+            }
+            Debug.WriteLine("Stream Client->Serv end");
+        }
     }
 }
