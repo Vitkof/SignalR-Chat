@@ -16,14 +16,13 @@ namespace Server
 {
     public class Startup
     {
-        private readonly IConfigurationRoot _configuration;
+        private readonly IConfiguration _configuration;
 
-        public Startup(IConfigurationRoot config)
+        public Startup(IConfiguration config)
         {
             _configuration = config;
         }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
@@ -50,6 +49,9 @@ namespace Server
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
             app.UseCors(policy =>
             {
                 policy.SetIsOriginAllowed(origin => true)
@@ -58,11 +60,10 @@ namespace Server
                 .AllowCredentials();
             });
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapHub<MessageHub>("/messages");
             });
         }

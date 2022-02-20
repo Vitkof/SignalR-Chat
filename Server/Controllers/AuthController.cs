@@ -17,13 +17,12 @@ namespace Server.Controllers
     public class AuthController : Controller
     {
         private readonly FakeUsers _users;
-        private readonly AuthOptions _options;
+        private readonly AuthOptions _options = new();
 
-        internal AuthController(IOptions<FakeUsers> fakeUsers,
-                                AuthOptions ao)
+
+        public AuthController(IOptions<FakeUsers> fakeUsers)
         {
             _users = fakeUsers.Value;
-            _options = ao;
         }
 
         [HttpPost("token")]
@@ -52,7 +51,7 @@ namespace Server.Controllers
                 notBefore: now,
                 claims: GetClaims(fakeUser),
                 expires: now.AddMinutes(_options.Lifetime),
-                signingCredentials: new SigningCredentials(_options.PrivateKey, SecurityAlgorithms.RsaSha256)
+                signingCredentials: _options.SigningCredentials
                 );
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(jwt);

@@ -15,9 +15,11 @@ namespace Server.Auth
 {
     public static class JwtExtensions
     {
+        private static AuthOptions _ao = new();
 
-        internal static void OptionsFunctions(JwtBearerOptions options, AuthOptions ao)
+        internal static void OptionsFunctions(JwtBearerOptions options)
         {
+            options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -27,12 +29,12 @@ namespace Server.Auth
                 RequireAudience = true,
                 RequireSignedTokens = true,
                 RequireExpirationTime = true,
-                ValidIssuer = ao.Issuer,
-                ValidAudience = ao.Audience,
-                IssuerSigningKey = ao.PublicKey,
+                ValidIssuer = _ao.Issuer,
+                ValidAudience = _ao.Audience,
+                IssuerSigningKey = _ao.PublicKey,
                 ClockSkew = TimeSpan.Zero
             };
-            options.RequireHttpsMetadata = false;
+            
             options.SaveToken = true;
             options.Events = new JwtBearerEvents
             {
@@ -62,12 +64,11 @@ namespace Server.Auth
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
-                    var ao = new AuthOptions();
-                    OptionsFunctions(options, ao);
+                    OptionsFunctions(options);
                 });
         }
 
-
+        
         public static void AddJwtAuthentication(this IServiceCollection services,
                                                 string rsaKeyPath, 
                                                 string file,
@@ -78,14 +79,14 @@ namespace Server.Auth
                 .AddJwtBearer(options =>
                 {
                     var rsaKey = AuthOptions.GetPublic(rsaKeyPath, file);
-                    var ao = new AuthOptions
+                    _ao = new AuthOptions
                     {
                         Issuer = issuer,
                         Audience = audience,
                         SigningCredentials = new SigningCredentials(rsaKey, SecurityAlgorithms.RsaSha256Signature),
                         PublicKey = rsaKey
                     };
-                    OptionsFunctions(options, ao);
+                    OptionsFunctions(options);
                 });            
         }
 
@@ -96,6 +97,11 @@ namespace Server.Auth
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build();
+
+                options.AddPolicy("BadWordsPolicy", policy =>
+                {
+                    policy.Requirements.Add(new MyAuthPolicy());
+                });
             });
         }
     }

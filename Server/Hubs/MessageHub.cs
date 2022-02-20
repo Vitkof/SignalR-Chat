@@ -13,6 +13,7 @@ namespace Server.Hubs
     [Authorize]
     public class MessageHub : Hub<IMessageClient>
     {
+        [Authorize(Policy = "BadWordsPolicy")]
         public Task SendToOthers(Message msg)
         {
             var msgForClient = new NewMessage(Context.UserIdentifier, msg);

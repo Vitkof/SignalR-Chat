@@ -7,7 +7,10 @@ namespace KeyGenerator
 {
     public class Program
     {
-        public static void Main(string webRootPath)
+        public static void Main() { }
+        
+
+        public static void Run(string root)
         {
             using (RSA rsa = RSA.Create())
             {
@@ -19,8 +22,8 @@ namespace KeyGenerator
                     Private = Convert.ToBase64String(privateKey),
                     Public = Convert.ToBase64String(publicKey)
                 }, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(webRootPath+"rsaKeys.json", json);
-            }            
+                File.WriteAllText(root + "rsaKeys.json", json);
+            }
         }
     }
 }
