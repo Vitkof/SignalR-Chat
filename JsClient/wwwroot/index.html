@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Index</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="container">
+    <h1>R-Chat</h1>
+    <p class="lead">This plain javascript client implementation for demo purposes only.</p>
+    <ul class="list-unstyled">
+        <li>It showing how to SignalR works.</li>
+        <li>Please see more examples on 
+            <mark>
+                <a href="https://github.com/Vitkof/SignalR-Chat">
+                    github.com
+                </a>
+            </mark>
+        </li>
+        <li>You can also ask a question on my <a href="mailto:vitkow@tut.by">e-mail</a>.</li>
+    </ul>
+    <div class="row">
+        <div class="col">
+            <h2>Log In</h2>
+
+            <form id="identity-form">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nickname or Email</label>
+                    <input type="text" class="form-control" id="name" placeholder="bill2@gmail.com">
+                </div>
+                <div class="mb-3">
+                    <label for="pass" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="pass">
+                </div>
+
+                <button id="login" type="button" class="btn btn-secondary">Get Token</button>
+            </form>
+            <div class="mt-3">
+
+                <div id="token" class="text-break">
+                    no token
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h2>Messages</h2>
+            <form id="send-form" class="invisible">
+                <div class="mb-3">
+                    <label for="msgText" class="form-label">Message text:</label>
+                    <input type="text" class="form-control" id="msgText" value="This is message from JavaScript client">
+                </div>
+                <button id="send" type="button" class="btn btn-primary">Send</button>
+            </form>
+            <div>
+                <ul id="messagesList"></ul>
+            </div>
+        </div>
+        <div class="col">
+            <h2>Users</h2>
+            <div class="btn-group invisible" role="group" id="userToolbar">
+                <button id="connect" type="button" class="btn btn-success">Connect</button>
+                <button id="disconnect" type="button" class="btn btn-danger" disabled>Disconnect</button>
+            </div>
+            <div id="userList">
+            </div>
+        </div>
+    </div>
+    <script src="microsoft-signalr/signalr.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
