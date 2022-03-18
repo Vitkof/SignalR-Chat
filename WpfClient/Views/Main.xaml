@@ -4,22 +4,150 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfClient.Views"
+        xmlns:c="clr-namespace:WpfClient.Converters"        
         xmlns:vm="clr-namespace:WpfClient.ViewModels"
+        xmlns:cmd="clr-namespace:WpfClient.Commands"
         mc:Ignorable="d"
         Title="{Binding Path=DisplayHeader}"
         WindowStartupLocation="CenterScreen"
-        Height="450" Width="800">
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
+        Height="480" Width="720"
+        WindowStyle="SingleBorderWindow" 
+        ResizeMode="CanMinimize" Icon="/Views/signlar.png">
+
+    <Window.Resources>
+        <c:BoolVisibilityConverter x:Key="BoolVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel>
-            <TextBlock Text="TEST TEXT DEMO"></TextBlock>
-            <TextBlock Text="{Binding DisplayHeader}"></TextBlock>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="3">
+            <TextBlock FontSize="18" Text="{Binding DisplayHeader}" HorizontalAlignment="Center"/>
+            <TextBlock Text="Application is built with MVVM" HorizontalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="ChatServer: " />
+                <TextBlock FontWeight="SemiBold" Text="{Binding ChatServUrl}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="AuthServer: " />
+                <TextBlock FontWeight="SemiBold" Text="{Binding AuthServUrl}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="Is Authenticated: " />
+                <TextBlock FontWeight="Bold" Text="{Binding IsAuthenticated}" />
+            </StackPanel>
         </StackPanel>
+        <Border Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="DarkBlue" CornerRadius="2"
+                Margin="15,0,5,0" Padding="5" Height="130" VerticalAlignment="Top" Background="Aquamarine">
+            <Grid Height="123"  VerticalAlignment="Top"  HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="25*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="1" Margin="-25,5,25,5"
+                    BorderThickness="1" BorderBrush="DarkBlue" CornerRadius="4">
+                    <TextBlock
+                    Padding="30 3"
+                    Text="Sign In"
+                    FontWeight="SemiBold"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Background="LightSkyBlue"
+                    Foreground="White" />
+                </Border>
+
+                <TextBlock Text="Login" 
+                           Grid.Column="0"
+                           Grid.Row="1"
+                           VerticalAlignment="Center" HorizontalAlignment="Left"
+                           Height="17" Margin="35,0,0,0" Width="39" FontWeight="Bold"
+                />
+
+                <TextBlock Grid.Column="0" Text="Password"
+                           Grid.Row="2"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Height="17" Margin="15,0,0,0" Width="60" FontWeight="Bold"/>
+
+                <TextBox Grid.Row="1" TextWrapping="Wrap"
+                         Text="{Binding Nickname, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center" Margin="1,0,10,0" Height="19" Grid.Column="1" />
+
+                <PasswordBox Grid.Row="2" x:Name="PasswordBox"
+                             Grid.Column="1"
+                             Password="" Margin="1,0,10,0" VerticalAlignment="Center" Height="19" />
+
+
+                <Button Content="Log In" HorizontalAlignment="Center"
+                    Command="{Binding LoginCmd}"
+                    CommandParameter="{Binding ElementName=PasswordBox}"
+                    Grid.Row="2" VerticalAlignment="Top" Grid.Column="1" Width="85" Height="20" Margin="-10,30,0,0" Grid.RowSpan="2"/>
+
+
+
+
+            </Grid>
+        </Border>
+        
+        <TextBlock Text="{Binding AccessToken}"
+                   FontSize="9"
+                   HorizontalAlignment="Left" Margin="14,135,10,0" Grid.Row="1" Grid.Column="0"
+                   TextWrapping="Wrap" VerticalAlignment="Top" Height="240" Width="200">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonUp">
+                    <i:InvokeCommandAction Command="{Binding ClearTokenCmd}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBlock>
+
+        <Grid Grid.Column="1" VerticalAlignment="Stretch" Margin="10,0,10,0"
+              Grid.Row="1" 
+              HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <StackPanel
+                Visibility="{Binding IsConnected, Converter={StaticResource BoolVisibilityConverter}}"
+                Orientation="Horizontal" Grid.Row="0" Margin="0,10,0,10">
+                <TextBlock Text="Enter message:" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="5,0">
+                    <TextBox 
+                        Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" 
+                        Width="165"/>
+                    <Button Content="Send" Command="{Binding SendCmd}" IsDefault="True" Padding="3,0"/>
+                </StackPanel>
+            </StackPanel>
+            <ListView Grid.Row="1" ItemsSource="{Binding MessagesList}"/>
+        </Grid>
+
+        <Grid Grid.Column="2" VerticalAlignment="Stretch" 
+              Grid.Row="1" 
+              HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                <Button Command="{Binding ConnectCmd}" Margin="0,0,5,0"
+                        Content="Connect"  Width="100" />
+                <Button Command="{Binding DisconnectCmd}"
+                        Content="Disconnect"  Width="100" />
+            </StackPanel>
+            <ListView Grid.Row="1" ItemsSource="{Binding UsersList}"/>
+        </Grid>
     </Grid>
 </Window>

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfClient.ViewModels;
 
 namespace WpfClient.Views
 {
@@ -23,6 +24,7 @@ namespace WpfClient.Views
         public Main()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
         }
     }
 }
