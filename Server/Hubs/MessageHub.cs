@@ -13,13 +13,61 @@ namespace Server.Hubs
     [Authorize]
     public class MessageHub : Hub<IMessageClient>
     {
+        private readonly ChatManager _chatManager;
+        private const string _defaultGroup = "Subscribers";
+
+        public MessageHub(ChatManager manager)
+        {
+            _chatManager = manager;
+        }
+
+
+        #region overrides
+        public override async Task OnConnectedAsync()
+        {
+            var userName = Context.User?.Identity?.Name ?? "Anonymous";
+            var connectionId = Context.ConnectionId;
+            _chatManager.ConnectUser(userName, connectionId);
+            await Groups.AddToGroupAsync(connectionId, _defaultGroup);
+            await UpdateUsersAsync();
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var isUserRemoved = _chatManager.DisconnectUser(Context.ConnectionId);
+            if (!isUserRemoved)
+            {
+                await base.OnDisconnectedAsync(exception);
+            }
+
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, _defaultGroup);
+            await UpdateUsersAsync();
+            await base.OnDisconnectedAsync(exception);
+        }
+        #endregion
+
+
         [Authorize(Policy = "BadWordsPolicy")]
         public Task SendToOthers(Message msg)
         {
             var msgForClient = new NewMessage(Context.UserIdentifier, msg);
             return Clients.Others.Send(msgForClient);
         }
+        
+        [Authorize(Policy = "BadWordsPolicy")]
+        public async Task SendMessageAsync(string name, string msg)
+        {
+            await Clients.All.SendMessageAsync(name, msg);
+        }
 
+
+        public async Task UpdateUsersAsync()
+        {
+            var users = _chatManager.Users.Select(u => u.Name).ToList();
+            await Clients.All.UpdateUsersAsync(users);
+        }
+        
 
         public Task<string> GetClientName()
         {
@@ -31,7 +79,7 @@ namespace Server.Hubs
 
         public Task SetClientName(string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
                 return Task.CompletedTask;
 
             if (Context.Items.ContainsKey("Name"))

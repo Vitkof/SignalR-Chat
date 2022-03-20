@@ -29,8 +29,10 @@ namespace Server
             services.Configure<FakeUsers>(_configuration.GetSection("FakeUsers"));
 
             services.AddControllers();
-            services.AddSignalR();
+            services.AddMemoryCache();
+            services.AddSignalR(o => o.EnableDetailedErrors = true);
             services.AddCors();
+            services.AddSingleton<ChatManager>();
 
             #region Token Bearer
             /// services.AddJwtAuthentication("./Auth", "rsaKey.json", "noobs", "IServerI");
