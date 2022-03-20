@@ -39,7 +39,7 @@ namespace WpfClient.Commands
             _vm.IsConnected = false;
             await _vm.Connection.DisposeAsync();
             _vm.UsersList = new ObservableCollection<string>();
-            _vm.MessagesList = new ObservableCollection<string>();
+            _vm.MessagesList = new ObservableCollection<NewMessage>();
         }
     }
 }

@@ -7,21 +7,23 @@
         xmlns:c="clr-namespace:WpfClient.Converters"        
         xmlns:vm="clr-namespace:WpfClient.ViewModels"
         xmlns:cmd="clr-namespace:WpfClient.Commands"
+        xmlns:local="clr-namespace:WpfClient"
         mc:Ignorable="d"
         Title="{Binding Path=DisplayHeader}"
         WindowStartupLocation="CenterScreen"
         Height="480" Width="720"
         WindowStyle="SingleBorderWindow" 
-        ResizeMode="CanMinimize" Icon="/Views/signlar.png">
+        ResizeMode="CanMinimize" Icon="/Views/signlar.png"
+        >
 
     <Window.Resources>
         <c:BoolVisibilityConverter x:Key="BoolVisibilityConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="7*"/>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -123,15 +125,91 @@
             <StackPanel
                 Visibility="{Binding IsConnected, Converter={StaticResource BoolVisibilityConverter}}"
                 Orientation="Horizontal" Grid.Row="0" Margin="0,10,0,10">
-                <TextBlock Text="Enter message:" Margin="0,0,0,5"/>
+                <TextBlock Text="Enter message:" Margin="0,0,0,4" />
                 <StackPanel Orientation="Horizontal" Margin="5,0">
                     <TextBox 
-                        Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" 
-                        Width="165"/>
-                    <Button Content="Send" Command="{Binding SendCmd}" IsDefault="True" Padding="3,0"/>
+                        Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" Width="211"/>
+                    <Button Content="Send" Command="{Binding SendCmd}" IsDefault="True" 
+                            Margin="0" Padding="3,0"/>
                 </StackPanel>
             </StackPanel>
-            <ListView Grid.Row="1" ItemsSource="{Binding MessagesList}"/>
+
+            <ListBox Grid.Row="1" ItemsSource="{Binding MessagesList}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Key" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Sender}" FontWeight="Bold"  />
+                            <TextBox Grid.Column="1" Text="{Binding Text }" Margin="5,0,0,0"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Direction}" Value="{x:Static local:ValueDirection.Myself}">
+                                <Setter Property="Background" Value="LightBlue"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Direction}" Value="{x:Static local:ValueDirection.Error}">
+                                <Setter Property="Background" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+
+            </ListBox>
+            <!--
+            <ListView Grid.Row="1" ItemsSource="{Binding MessagesList}">
+                <ListView.View>
+
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Width="70" >
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Sender}" TextWrapping="Wrap" 
+                                               Foreground="DarkOrange"
+                                               TextAlignment="Right">
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+
+                            </GridViewColumn>
+                            
+                            <GridViewColumn Width="260">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap" 
+                                               Foreground="DarkOrange"
+                                               TextAlignment="Left">
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+
+                        
+                    </GridView>
+                </ListView.View>
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Direction}" Value="{x:Static local:ValueDirection.Myself}">
+                                <Setter Property="Background" Value="LightBlue"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Direction}" Value="{x:Static local:ValueDirection.Error}">
+                                <Setter Property="Background" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>-->
         </Grid>
 
         <Grid Grid.Column="2" VerticalAlignment="Stretch" 
@@ -143,9 +221,9 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
                 <Button Command="{Binding ConnectCmd}" Margin="0,0,5,0"
-                        Content="Connect"  Width="100" />
+                        Content="Connect" Width="70" />
                 <Button Command="{Binding DisconnectCmd}"
-                        Content="Disconnect"  Width="100" />
+                        Content="Disconnect" Width="80" />
             </StackPanel>
             <ListView Grid.Row="1" ItemsSource="{Binding UsersList}"/>
         </Grid>

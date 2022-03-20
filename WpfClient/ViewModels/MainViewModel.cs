@@ -138,9 +138,9 @@ namespace WpfClient.ViewModels
         #endregion
 
         #region property MessagesList
-        private ObservableCollection<string> _messagesList = new();
+        private ObservableCollection<NewMessage> _messagesList = new();
 
-        public ObservableCollection<string> MessagesList
+        public ObservableCollection<NewMessage> MessagesList
         {
             get => _messagesList;
             set => Set(ref _messagesList, value);

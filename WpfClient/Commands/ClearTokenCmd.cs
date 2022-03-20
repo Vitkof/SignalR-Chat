@@ -23,12 +23,15 @@ namespace WpfClient.Commands
 
         public override bool CanExecute(object param) => true;
 
-        public async override void Execute(object param)
+        public override async void Execute(object param)
         {
             _vm.IsAuthenticated = false;
             _vm.AccessToken = null;
-            var dis = new DisconnectCmd(_vm);
-            await dis.DisconnectFromChatAsync();
+            if (_vm.IsConnected)
+            {
+                var dis = new DisconnectCmd(_vm);
+                await dis.DisconnectFromChatAsync();
+            }
         }
     }
 }

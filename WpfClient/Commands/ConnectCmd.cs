@@ -46,8 +46,37 @@ namespace WpfClient.Commands
 
             _vm.Connection.On<NewMessage>("Send", message =>
             {
-                AppendTextToChat(message.Sender, message.Text);
+                _vm.MessagesList.Add(message);
             });
+
+            _vm.Connection.On<string, string>("SendMessageAsync", (user, message) =>
+            {
+                var newMsg = new NewMessage
+                {
+                    Text = message,
+                    Sender = user
+                };
+                _vm.MessagesList.Add(newMsg);
+            });
+
+            _vm.Connection.On<IEnumerable<string>>("UpdateUsersAsync", users =>
+            {
+                _vm.UsersList = new ObservableCollection<string>(users);
+            });
+
+            _vm.Connection.Reconnected += id =>
+            {
+                _vm.MessagesList.Add(new NewMessage
+                {
+                    Text = $"Connection reconnected with id: {id}"
+                });
+                return Task.CompletedTask;
+            };
+            _vm.Connection.Reconnecting += ex =>
+            {
+                _vm.MessagesList.Add(new NewMessage { Text = $"Connection reconnecting. {ex?.Message}" });
+                return Task.CompletedTask;
+            };
 
             try
             {
@@ -56,14 +85,23 @@ namespace WpfClient.Commands
             }
             catch (Exception exception)
             {
-                _vm.MessagesList.Add(exception.Message);
+                _vm.MessagesList.Add(new NewMessage
+                {
+                    Text = exception.Message,
+                    Direction = ValueDirection.Error
+                });
             }
         }
 
         private void AppendTextToChat(string sender, string text)
         {
-            var item = $"{sender}: {text}";
-            _vm.MessagesList.Add(item);
+            var newMsg = new NewMessage
+            {
+                Text = text,
+                Sender = sender
+            };
+
+            _vm.MessagesList.Add(newMsg);
         }
     }
 }

@@ -27,12 +27,12 @@ namespace WpfClient.Commands
 
         public override async void Execute(object param)
         {
-            await SendMessageAsync(_vm.Nickname, _vm.MessageText);
+            await SendMessageAsync(_vm.MessageText);
             _vm.MessageText = string.Empty;
         }
 
 
-        private async Task SendMessageAsync(string nickName, string? message)
+        private async Task SendMessageAsync(string? message)
         {
             var msg = new Message
             {
@@ -40,8 +40,14 @@ namespace WpfClient.Commands
             };
 
             await _vm.Connection.SendAsync("SendToOthers", msg);
-            string item = $"{nickName}: {message}";
-            _vm.MessagesList.Add(item);
+
+            var newMsg = new NewMessage
+            {
+                Text = message,
+                Sender = "Me",
+                Direction = ValueDirection.Myself
+            };
+            _vm.MessagesList.Add(newMsg);
         }
     }
 }

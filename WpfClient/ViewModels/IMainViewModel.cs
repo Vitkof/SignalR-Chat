@@ -15,7 +15,7 @@ namespace WpfClient.ViewModels
         public string ChatServUrl { get; set; }
         public HubConnection Connection { get; set; }
         public ObservableCollection<string> UsersList { get; set; }
-        public ObservableCollection<string> MessagesList { get; set; }
+        public ObservableCollection<NewMessage> MessagesList { get; set; }
         public string MessageText { get; set; }
     }
 }
