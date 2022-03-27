@@ -28,6 +28,7 @@ namespace WpfClient.ViewModels
             _connectCmd = new ConnectCmd(this);
             _disconnectCmd = new DisconnectCmd(this);
             _clearTokenCmd = new ClearTokenCmd(this);
+            SetInitialSelectedPort();
         }
 
         #region property DisplayHeader
@@ -105,7 +106,7 @@ namespace WpfClient.ViewModels
         #endregion
 
         #region property ChatServUrl
-        private string _chatServUrl = "http://localhost:8334";
+        private string _chatServUrl;
 
         public string ChatServUrl
         {
@@ -161,11 +162,48 @@ namespace WpfClient.ViewModels
         }
         #endregion
 
+        #region property SelectedPort
+        private int _selectedPort;
+
+        public int SelectedPort
+        {
+            get => _selectedPort;
+            set
+            {
+                if (_selectedPort != value)
+                {
+                    _selectedPort = value;
+                    OnPropertyChanged("SelectedPort");
+                }
+            }
+        }
+        #endregion
+
+        #region property Ports
+        private ObservableCollection<int> _portsList = new()
+        { 8334, 8335, 8336 };
+
+        public ObservableCollection<int> PortsList
+        {
+            get => _portsList;
+            private set => Set(ref _portsList, value);
+        }
+        #endregion
+
 
         public Command LoginCmd => _loginCmd;
         public Command SendCmd => _sendCmd;
         public Command ConnectCmd => _connectCmd;
         public Command DisconnectCmd => _disconnectCmd;
         public Command ClearTokenCmd => _clearTokenCmd;
+
+
+        private void SetInitialSelectedPort()
+        {
+            if (PortsList != null)
+                SelectedPort = PortsList[0];
+            else
+                throw new ArgumentNullException("List of ports is empty");
+        }
     }
 }

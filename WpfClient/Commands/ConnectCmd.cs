@@ -38,11 +38,12 @@ namespace WpfClient.Commands
 
         private async Task ConnectToChatAsync()
         {
+            _vm.ChatServUrl = $"http://localhost:{_vm.SelectedPort}";
+
             _vm.Connection = new HubConnectionBuilder()
-                .WithUrl($"http://localhost:8334/messages?token={_vm.AccessToken}")
+                .WithUrl($"{_vm.ChatServUrl}/messages?token={_vm.AccessToken}")
                 .WithAutomaticReconnect()
                 .Build();
-
 
             _vm.Connection.On<NewMessage>("Send", message =>
             {

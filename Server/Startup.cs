@@ -10,7 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Server.Auth;
 using Server.Hubs;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Server
 {
@@ -25,12 +27,20 @@ namespace Server
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var redisConnectStr = _configuration.GetValue("Redis", "127.0.0.1:6379");
+
+
             services.AddOptions();
             services.Configure<FakeUsers>(_configuration.GetSection("FakeUsers"));
 
             services.AddControllers();
             services.AddMemoryCache();
-            services.AddSignalR(o => o.EnableDetailedErrors = true);
+            services.AddSignalR(o => o.EnableDetailedErrors = true)
+                .AddStackExchangeRedis(redisConnectStr, options => 
+                {
+                    options.Configuration.ChannelPrefix = "test";
+                });
+
             services.AddCors();
             services.AddSingleton<ChatManager>();
 

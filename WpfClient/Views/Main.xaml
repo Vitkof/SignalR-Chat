@@ -18,6 +18,7 @@
 
     <Window.Resources>
         <c:BoolVisibilityConverter x:Key="BoolVisibilityConverter"/>
+        <c:NotBoolConverter x:Key="NotBoolConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -35,6 +36,14 @@
             <TextBlock Text="Application is built with MVVM" HorizontalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="ChatServer: " />
+                <ComboBox Name="serversList" ItemsSource="{Binding PortsList}"
+                          SelectedItem="{Binding SelectedPort}"
+                          Visibility="{Binding Path=IsConnected, 
+                            Converter={StaticResource BoolVisibilityConverter},
+                            ConverterParameter=Visibility.Visible,
+                            UpdateSourceTrigger=PropertyChanged}"
+                          Height="14" Padding="7,-1,0,0"
+                          />
                 <TextBlock FontWeight="SemiBold" Text="{Binding ChatServUrl}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -103,7 +112,7 @@
 
             </Grid>
         </Border>
-        
+
         <TextBlock Text="{Binding AccessToken}"
                    FontSize="9"
                    HorizontalAlignment="Left" Margin="14,135,10,0" Grid.Row="1" Grid.Column="0"

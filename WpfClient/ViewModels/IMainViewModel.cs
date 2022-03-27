@@ -17,5 +17,6 @@ namespace WpfClient.ViewModels
         public ObservableCollection<string> UsersList { get; set; }
         public ObservableCollection<NewMessage> MessagesList { get; set; }
         public string MessageText { get; set; }
+        public int SelectedPort { get; }
     }
 }
